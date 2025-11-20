@@ -1,48 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import React, { useMemo } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
+import './styles/theme.css';
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
+import Offices from './pages/Offices';
+import Employees from './pages/Employees';
 
 // PUBLIC_INTERFACE
 function App() {
-  const [theme, setTheme] = useState('light');
+  /** Root application with sidebar layout and routing. */
+  // You can extend with theme switching later; for now we use Ocean Professional theme via CSS variables.
 
-  // Effect to apply theme to document element
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
-
-  // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
+  const navItems = useMemo(
+    () => [
+      { label: 'Offices', to: '/offices' },
+      { label: 'Employees', to: '/employees' },
+    ],
+    []
+  );
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <div className="container-app">
+        <Sidebar items={navItems} />
+        <main className="main-content">
+          <Header title="Office & Employee Manager" />
+          <Routes>
+            <Route path="/" element={<Navigate to="/offices" replace />} />
+            <Route path="/offices" element={<Offices />} />
+            <Route path="/employees" element={<Employees />} />
+            <Route path="*" element={<Navigate to="/offices" replace />} />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
   );
 }
 
